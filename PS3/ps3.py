@@ -10,6 +10,7 @@
 import math
 import random
 import string
+import copy
 
 VOWELS = 'aeiou'
 CONSONANTS = 'bcdfghjklmnpqrstvwxyz'
@@ -173,8 +174,15 @@ def update_hand(hand, word):
     hand: dictionary (string -> int)
     returns: dictionary (string -> int)
     """
-
-    pass  # TO DO... Remove this line when you implement this function
+    word = word.lower()
+    new_hand = copy.deepcopy(hand)
+    for l in word:
+        if new_hand.get(l, 0):
+            if new_hand.get(l, 0) > 1:
+                new_hand[l] -= 1
+            else:
+                del new_hand[l]
+    return new_hand
 
 #
 # Problem #3: Test word validity
