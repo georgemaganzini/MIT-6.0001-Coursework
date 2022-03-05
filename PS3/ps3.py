@@ -199,7 +199,17 @@ def is_valid_word(word, hand, word_list):
     returns: boolean
     """
 
-    pass  # TO DO... Remove this line when you implement this function
+    word = word.lower()
+    test_hand = copy.deepcopy(hand)
+    for l in word:
+        if test_hand.get(l, 0):
+            if test_hand.get(l, 0) >= 1:
+                test_hand[l] -= 1
+            else:
+                return False
+        else:
+            return False
+    return True if word in word_list else False
 
 #
 # Problem #5: Playing a hand
