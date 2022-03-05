@@ -11,13 +11,14 @@ import math
 import random
 import string
 import copy
+import fnmatch
 
 VOWELS = 'aeiou'
 CONSONANTS = 'bcdfghjklmnpqrstvwxyz'
 HAND_SIZE = 7
 
 SCRABBLE_LETTER_VALUES = {
-    'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4, 'z': 10
+    '*': 0, 'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4, 'z': 10
 }
 
 # -----------------------------------
@@ -141,13 +142,14 @@ def deal_hand(n):
     """
 
     hand={}
-    num_vowels = int(math.ceil(n / 3))
+    hand["*"] = 1
+    num_vowels = int(math.ceil(n / 3)) - 1
 
     for i in range(num_vowels):
         x = random.choice(VOWELS)
         hand[x] = hand.get(x, 0) + 1
 
-    for i in range(num_vowels, n):
+    for i in range(num_vowels + 1, n):
         x = random.choice(CONSONANTS)
         hand[x] = hand.get(x, 0) + 1
 
@@ -201,15 +203,24 @@ def is_valid_word(word, hand, word_list):
 
     word = word.lower()
     test_hand = copy.deepcopy(hand)
-    for l in word:
-        if test_hand.get(l, 0):
-            if test_hand.get(l, 0) >= 1:
-                test_hand[l] -= 1
+
+    if '*' in word:
+        pattern = word.replace("*", "?")
+        wild_index = pattern.find("?")
+        for w in word_list:
+            if fnmatch.fnmatch(w, pattern):
+                if w[wild_index] in VOWELS:
+                    return True
+    else:
+        for l in word:
+            if test_hand.get(l, 0):
+                if test_hand.get(l, 0) >= 1:
+                    test_hand[l] -= 1
+                else:
+                    return False
             else:
                 return False
-        else:
-            return False
-    return True if word in word_list else False
+        return True if word in word_list else False
 
 #
 # Problem #5: Playing a hand
