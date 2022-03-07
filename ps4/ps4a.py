@@ -22,17 +22,14 @@ def get_permutations(sequence):
     Note: depending on your implementation, you may return the permutations in
     a different order than what is listed here.
     '''
+    # base case
+    if len(sequence) <= 1: return [sequence]
 
-
-
-    if len(sequence) <= 1:
-        return [sequence]
     else:
-        perms = []
-        for e in get_permutations(sequence[:-1]):
-            for i in range(len(e)+ 1):
-                perms.append(e[:-1] + e[i:])
-        return perms
+        result = []
+        for letter in sequence:
+            result += [letter + other_letter for other_letter in get_permutations(sequence.replace(letter, ""))]
+        return result
 
 if __name__ == '__main__':
 #    #EXAMPLE
