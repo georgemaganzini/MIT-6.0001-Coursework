@@ -52,7 +52,7 @@ created.
 
 Author: Allen B. Taylor, a.b.taylor@gmail.com
 '''
-
+import tkinter
 from tkinter import *
 import threading
 import queue
