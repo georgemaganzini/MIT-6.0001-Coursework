@@ -11,7 +11,7 @@ from project_util import translate_html
 from mtTkinter import *
 from datetime import datetime
 import pytz
-
+import re
 
 #-----------------------------------------------------------------------
 
@@ -95,13 +95,31 @@ class Trigger(object):
 # PHRASE TRIGGERS
 
 # Problem 2
-# TODO: PhraseTrigger
+class PhraseTrigger(Trigger):
+    def __init__(self, phrase_string):
+        self.phrase_string = phrase_string
+
+    def is_phrase_in(self, text):
+        low_phrase = self.phrase_string.lower()
+        low_text = text.lower()
+
+        # remove punctuation, split and join to remove excess spaces, concatenate space at end so that 'purple cow_' doesn't trigger on 'purple cows'
+        cleaned_phrase = ' '.join(re.sub(r"[,.;@#?!&$%^*()]+\ *", " ", low_phrase).split()) + ' '
+
+        cleaned_text = ' '.join(re.sub(r"[,.;@#?!&$%^*()]+\ *", " ", low_text).split()) + ' '
+
+        # print(cleaned_phrase, cleaned_text, cleaned_phrase in cleaned_text)
+        return cleaned_phrase in cleaned_text
 
 # Problem 3
-# TODO: TitleTrigger
+class TitleTrigger(PhraseTrigger):
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_title())
 
 # Problem 4
-# TODO: DescriptionTrigger
+class DescriptionTrigger(PhraseTrigger):
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_description())
 
 # TIME TRIGGERS
 
@@ -223,7 +241,8 @@ def main_thread(master):
             stories = process("http://news.google.com/news?output=rss")
 
             # Get stories from Yahoo's Top Stories RSS news feed
-            stories.extend(process("http://news.yahoo.com/rss/topstories"))
+
+            # stories.extend(process("http://news.yahoo.com/rss/topstories"))
 
             stories = filter_stories(stories, triggerlist)
 
